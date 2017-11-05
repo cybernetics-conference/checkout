@@ -53,6 +53,8 @@ if __name__ == '__main__':
     # s to scan
     import sys
     import requests
-    library_host = sys.argv[1]
+    library_host = sys.argv[1] if len(sys.argv) > 1 else None
     for scanned in scanner():
-        requests.post('{}/checkout'.format(library_host), data=scanned)
+        print(scanned)
+        if library_host is not None:
+            requests.post('{}/checkout'.format(library_host), data=scanned)
