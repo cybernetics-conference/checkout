@@ -4,11 +4,12 @@ import pygame.camera
 from PIL import Image
 from pyzbar.pyzbar import decode
 from pygame.locals import KEYDOWN, K_q
-from db import DB
+#from db import DB
 from datetime import datetime, timedelta
 
 RECENT = 45 # seconds
-db = DB('checkouts')
+# db = DB('checkouts')
+db = []
 dim = (640,480)
 pygame.font.init()
 font = pygame.font.SysFont('monospace', 32, bold=True)
@@ -31,7 +32,8 @@ def recently_scanned(url):
     """check if the URL was recently scanned
     (to prevent double-scanning)"""
     recent = datetime.now() - timedelta(seconds=RECENT)
-    for checkout in reversed(list(db.all())):
+    # for checkout in reversed(list(db.all())):
+    for checkout in reversed(db):
         dt = datetime.fromtimestamp(checkout['ts'])
         if dt < recent:
             break
