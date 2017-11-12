@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 RECENT = 45 # seconds
 db = DB('checkouts')
-dim = (1280,720)
+dim = (640,480)
 pygame.font.init()
 font = pygame.font.SysFont('monospace', 32, bold=True)
 font_color = (255,255,0)
@@ -75,6 +75,7 @@ if __name__ == '__main__':
 
             # TODO
             # url = url.replace('https://library.cybernetics.social', 'http://localhost:5000')
+            url = url.replace('https', 'http')
 
             # ping library for checkout
             resp = requests.post(url)
