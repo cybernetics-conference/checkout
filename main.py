@@ -4,12 +4,12 @@ import pygame.camera
 from PIL import Image
 from pyzbar.pyzbar import decode
 from pygame.locals import KEYDOWN, K_q
-#from db import DB
 from datetime import datetime, timedelta
+from db import DB
+import requests
 
 RECENT = 45 # seconds
-# db = DB('checkouts')
-db = []
+db = DB('checkouts')
 dim = (640,480)
 pygame.font.init()
 font = pygame.font.SysFont('monospace', 32, bold=True)
@@ -32,8 +32,7 @@ def recently_scanned(url):
     """check if the URL was recently scanned
     (to prevent double-scanning)"""
     recent = datetime.now() - timedelta(seconds=RECENT)
-    # for checkout in reversed(list(db.all())):
-    for checkout in reversed(db):
+    for checkout in reversed(list(db.all())):
         dt = datetime.fromtimestamp(checkout['ts'])
         if dt < recent:
             break
@@ -41,14 +40,29 @@ def recently_scanned(url):
             return True
     return False
 
+def remote_checkouts(q):
+    while True:
+        url = child.recv()
+        resp = requests.post(url)
+        book = resp.json()
+        child.send(book)
+
 
 if __name__ == '__main__':
-    import requests
+    from multiprocessing import Process, Pipe
+
+    parent, child = Pipe()
+    request_proc = Process(target=remote_checkouts, args=(child,))
+    request_proc.start()
     to_display = []
     pygame.init()
     display = pygame.display.set_mode(dim, 0)
     capture = True
     while capture:
+        if parent.poll():
+            book = parent.recv()
+            to_display.append(book['title'])
+
         # show info on display
         x, y = 20, 20
         line_spacing = 2
@@ -75,13 +89,9 @@ if __name__ == '__main__':
                 'url': url
             })
 
-            # TODO
-            # url = url.replace('https://library.cybernetics.social', 'http://localhost:5000')
+            # no https on server
             url = url.replace('https', 'http')
-
-            # ping library for checkout
-            resp = requests.post(url)
-            book = resp.json()
-            to_display.append(book['title'])
+            parent.send(url)
     cam.stop()
     pygame.quit()
+    request_proc.join()
