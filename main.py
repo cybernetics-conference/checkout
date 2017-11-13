@@ -8,12 +8,19 @@ from datetime import datetime, timedelta
 from db import DB
 import requests
 
-RECENT = 45 # seconds
+# seconds before a book can be re-checked out
+RECENT = 45
+
+# keep local record of checkouts and times
 db = DB('checkouts')
+
+# interface setup
 dim = (800,600)
+font_color = (255,255,0)
 pygame.font.init()
 font = pygame.font.SysFont('monospace', 32, bold=True)
-font_color = (255,255,0)
+
+# webcam setup
 pygame.camera.init()
 cams = pygame.camera.list_cameras()
 cam = pygame.camera.Camera(cams[-1], dim)
@@ -40,6 +47,7 @@ def recently_scanned(url):
             return True
     return False
 
+
 def remote_checkouts(q):
     while True:
         url = child.recv()
@@ -49,17 +57,26 @@ def remote_checkouts(q):
 
 
 if __name__ == '__main__':
+    # raspberry pi 3 has some wifi hardware latency issues
+    # where requests take up to 5sec for a response.
+    # so throw them to a separate process so
+    # they don't block the webcam
     from multiprocessing import Process, Pipe
     parent, child = Pipe()
     request_proc = Process(target=remote_checkouts, args=(child,))
     request_proc.start()
-    titles = {}
 
+    # map urls -> titles for visual feedback
+    titles = {}
     to_display = []
+
     pygame.init()
     display = pygame.display.set_mode(dim, 0)
+
     capture = True
     while capture:
+        # check the checkout process
+        # for new results
         if parent.poll():
             data = parent.recv()
             titles[data['url']] = data['book']['title']
@@ -93,7 +110,11 @@ if __name__ == '__main__':
 
             # no https on server
             url = url.replace('https', 'http')
+
+            # send url to checkout process to deal with
             parent.send(url)
+
+            # give some visual feedback about the checkout
             to_display.append(url)
     cam.stop()
     pygame.quit()
