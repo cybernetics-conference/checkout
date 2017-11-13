@@ -7,6 +7,7 @@ from pygame.locals import KEYDOWN, K_q
 from datetime import datetime, timedelta
 from db import DB
 import requests
+import socket
 
 # seconds before a book can be re-checked out
 RECENT = 15
@@ -72,7 +73,10 @@ def wrap_text(text, width):
 def remote_checkouts(q):
     while True:
         url, attendee_id = child.recv()
-        resp = requests.post(url, data={'attendee_id': attendee_id})
+        resp = requests.post(url, data={
+            'attendee_id': attendee_id,
+            'station_id': socket.gethostname()
+        })
         book = resp.json()
         child.send({'url': url, 'book': book})
 
