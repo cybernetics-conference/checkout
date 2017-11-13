@@ -11,6 +11,10 @@ import requests
 # seconds before a book can be re-checked out
 RECENT = 45
 
+# layout
+PADDING_X = 20
+PADDING_Y = 20
+
 # keep local record of checkouts and times
 db = DB('checkouts')
 
@@ -52,6 +56,16 @@ def recently_scanned(url):
     return False
 
 
+def wrap_text(text, width):
+    lines = [[]]
+    for word in text.split():
+        if font.size(' '.join(lines[-1] + [word]))[0] < width - PADDING_X*2:
+            lines[-1].append(word)
+        else:
+            lines.append(['  ', word])
+    return [' '.join(line) for line in lines]
+
+
 def remote_checkouts(q):
     while True:
         url = child.recv()
@@ -88,15 +102,18 @@ if __name__ == '__main__':
             titles[data['url']] = data['book']['title']
 
         # show info on display
-        x, y = 20, 20
+        y = PADDING_Y
         line_spacing = 2
         img = cam.get_image()
         img = pygame.transform.scale(img, dim)
         for url in reversed(to_display):
             title = titles.get(url, 'Processing...')
-            label = font.render(title, 0, font_color, (0,0,0))
-            img.blit(label, (x, y))
-            y += font.size(title)[1] + line_spacing
+            lines = wrap_text(title, img.get_width())
+            for line in lines:
+                label = font.render(line, 0, font_color, (0,0,0))
+                label.set_alpha(125)
+                img.blit(label, (PADDING_X, y))
+                y += font.size(title)[1] + line_spacing
 
         # flash color indicating successful scan
         if scanned:
