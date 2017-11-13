@@ -16,7 +16,7 @@ db = DB('checkouts')
 
 # interface setup
 dim = (800,600)
-font_color = (255,255,0)
+font_color = (255,255,255)
 pygame.font.init()
 font = pygame.font.SysFont('monospace', 32, bold=True)
 
@@ -78,6 +78,7 @@ if __name__ == '__main__':
     # display = pygame.display.set_mode(dim, 0)
 
     capture = True
+    scanned = False
     while capture:
         # check the checkout process
         # for new results
@@ -91,9 +92,15 @@ if __name__ == '__main__':
         img = cam.get_image()
         for url in reversed(to_display):
             title = titles.get(url, 'Processing...')
-            label = font.render(title, 0, font_color)
+            label = font.render(title, 0, font_color, (0,0,0))
             img.blit(label, (x, y))
             y += font.size(title)[1] + line_spacing
+
+        # flash color indicating successful scan
+        if scanned:
+            pygame.draw.rect(img, (0,0,255), (0,0,dim[0],dim[1]), 0)
+            scanned = False
+
         display.blit(img, (0,0))
         pygame.display.flip()
 
@@ -114,6 +121,7 @@ if __name__ == '__main__':
 
             # no https on server
             url = url.replace('https', 'http')
+            scanned = True
 
             # send url to checkout process to deal with
             parent.send(url)
