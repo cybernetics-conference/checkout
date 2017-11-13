@@ -30,9 +30,12 @@ cam.start()
 def scan():
     img = cam.get_image()
     img = pygame.image.tostring(img, 'RGBA', False)
-    img = Image.frombytes('RGBA', dim, img)
-    result = decode(img)
-    return [r.data.decode('utf8') for r in result]
+    try:
+        img = Image.frombytes('RGBA', dim, img)
+        result = decode(img)
+        return [r.data.decode('utf8') for r in result]
+    except ValueError:
+        return []
 
 
 def recently_scanned(url):
@@ -71,7 +74,8 @@ if __name__ == '__main__':
     to_display = []
 
     pygame.init()
-    display = pygame.display.set_mode(dim, 0)
+    display = pygame.display.set_mode(dim, pygame.FULLSCREEN)
+    # display = pygame.display.set_mode(dim, 0)
 
     capture = True
     while capture:
@@ -116,6 +120,7 @@ if __name__ == '__main__':
 
             # give some visual feedback about the checkout
             to_display.append(url)
+    request_proc.terminate()
+    request_proc.join()
     cam.stop()
     pygame.quit()
-    request_proc.join()
