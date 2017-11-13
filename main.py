@@ -25,16 +25,17 @@ pygame.camera.init()
 cams = pygame.camera.list_cameras()
 cam = pygame.camera.Camera(cams[-1], dim)
 cam.start()
+cam_dim = cam.get_size()
 
 
 def scan():
     img = cam.get_image()
     img = pygame.image.tostring(img, 'RGBA', False)
     try:
-        img = Image.frombytes('RGBA', dim, img)
+        img = Image.frombytes('RGBA', cam_dim, img)
         result = decode(img)
         return [r.data.decode('utf8') for r in result]
-    except ValueError:
+    except ValueError as e:
         return []
 
 
@@ -74,8 +75,8 @@ if __name__ == '__main__':
     to_display = []
 
     pygame.init()
-    display = pygame.display.set_mode(dim, pygame.FULLSCREEN)
-    # display = pygame.display.set_mode(dim, 0)
+    # display = pygame.display.set_mode(dim, pygame.FULLSCREEN)
+    display = pygame.display.set_mode(dim, 0)
 
     capture = True
     scanned = False
@@ -90,6 +91,7 @@ if __name__ == '__main__':
         x, y = 20, 20
         line_spacing = 2
         img = cam.get_image()
+        img = pygame.transform.scale(img, dim)
         for url in reversed(to_display):
             title = titles.get(url, 'Processing...')
             label = font.render(title, 0, font_color, (0,0,0))
