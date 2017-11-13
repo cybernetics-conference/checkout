@@ -10,7 +10,7 @@ import requests
 
 RECENT = 45 # seconds
 db = DB('checkouts')
-dim = (640,480)
+dim = (800,600)
 pygame.font.init()
 font = pygame.font.SysFont('monospace', 32, bold=True)
 font_color = (255,255,0)
@@ -45,32 +45,34 @@ def remote_checkouts(q):
         url = child.recv()
         resp = requests.post(url)
         book = resp.json()
-        child.send(book)
+        child.send({'url': url, 'book': book})
 
 
 if __name__ == '__main__':
     from multiprocessing import Process, Pipe
-
     parent, child = Pipe()
     request_proc = Process(target=remote_checkouts, args=(child,))
     request_proc.start()
+    titles = {}
+
     to_display = []
     pygame.init()
     display = pygame.display.set_mode(dim, 0)
     capture = True
     while capture:
         if parent.poll():
-            book = parent.recv()
-            to_display.append(book['title'])
+            data = parent.recv()
+            titles[data['url']] = data['book']['title']
 
         # show info on display
         x, y = 20, 20
         line_spacing = 2
         img = cam.get_image()
-        for line in reversed(to_display):
-            label = font.render(line, 0, font_color)
+        for url in reversed(to_display):
+            title = titles.get(url, 'Processing...')
+            label = font.render(title, 0, font_color)
             img.blit(label, (x, y))
-            y += font.size(line)[1] + line_spacing
+            y += font.size(title)[1] + line_spacing
         display.blit(img, (0,0))
         pygame.display.flip()
 
@@ -92,6 +94,7 @@ if __name__ == '__main__':
             # no https on server
             url = url.replace('https', 'http')
             parent.send(url)
+            to_display.append(url)
     cam.stop()
     pygame.quit()
     request_proc.join()
