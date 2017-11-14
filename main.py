@@ -73,7 +73,7 @@ def wrap_text(text, width):
 def remote_checkouts(q):
     while True:
         url, attendee_id = child.recv()
-        resp = requests.post(url, data={
+        resp = requests.post(url, json={
             'attendee_id': attendee_id,
             'station_id': socket.gethostname()
         })
@@ -159,6 +159,7 @@ if __name__ == '__main__':
 
             # no https on server
             url = url.replace('https', 'http')
+            # url = url.replace('library.cybernetics.social', 'localhost:5000')
             was_scanned = True
 
             # send url to checkout process to deal with
