@@ -75,10 +75,11 @@ def wrap_text(text, width):
 
 def remote_checkouts(q):
     while True:
-        url, attendee_id = child.recv()
+        url, attendee_id, ts = child.recv()
         resp = requests.post(url, json={
             'attendee_id': attendee_id,
-            'station_id': socket.gethostname()
+            'station_id': socket.gethostname(),
+            'timestamp': ts
         })
         book = resp.json()
         child.send({'url': url, 'book': book})
@@ -157,8 +158,9 @@ if __name__ == '__main__':
 
         for url in urls:
             # track local checkouts
+            ts = datetime.now().timestamp()
             db.append({
-                'ts': datetime.now().timestamp(),
+                'ts': ts,
                 'url': url
             })
 
@@ -169,7 +171,7 @@ if __name__ == '__main__':
             was_scanned = True
 
             # send url to checkout process to deal with
-            parent.send((url, attendee_id))
+            parent.send((url, attendee_id, ts))
 
             # give some visual feedback about the checkout
             to_display = ('Thank you', datetime.now())
