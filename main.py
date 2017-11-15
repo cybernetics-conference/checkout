@@ -9,6 +9,9 @@ from db import DB
 import requests
 import socket
 
+FULLSCREEN = True
+LOCAL = False
+
 # seconds before a book can be re-checked out
 RECENT = 15
 
@@ -95,8 +98,10 @@ if __name__ == '__main__':
     to_display = ('', datetime.now())
 
     pygame.init()
-    # display = pygame.display.set_mode(dim, pygame.FULLSCREEN)
-    display = pygame.display.set_mode(dim, 0)
+    if FULLSCREEN:
+        display = pygame.display.set_mode(dim, pygame.FULLSCREEN)
+    else:
+        display = pygame.display.set_mode(dim, 0)
 
     capture = True
     was_scanned = False
@@ -138,9 +143,9 @@ if __name__ == '__main__':
         scanned = scan()
         attendee_id, urls = None, []
         for s in scanned:
-            # attendee QR codes start with 'A:'
-            if s.startswith('A:'):
-                attendee_id = s[2:]
+            # attendee QR codes have 'planet' in their url
+            if 'planet' in s:
+                attendee_id = s.replace('http://library.cybernetics.social/planet/', '')
             elif recently_scanned(s):
                 continue
             else:
@@ -159,7 +164,8 @@ if __name__ == '__main__':
 
             # no https on server
             url = url.replace('https', 'http')
-            # url = url.replace('library.cybernetics.social', 'localhost:5000')
+            if LOCAL:
+                url = url.replace('library.cybernetics.social', 'localhost:5000')
             was_scanned = True
 
             # send url to checkout process to deal with
