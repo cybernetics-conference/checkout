@@ -106,7 +106,11 @@ if __name__ == '__main__':
 
     capture = True
     was_scanned = False
+    frames = 0
     while capture:
+        if frames % 10 != 0:
+            continue
+        frames += 1
         # check the checkout process
         # for new results
         if parent.poll():
