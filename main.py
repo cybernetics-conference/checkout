@@ -108,8 +108,6 @@ if __name__ == '__main__':
     was_scanned = False
     frames = 0
     while capture:
-        if frames % 12 != 0:
-            continue
         frames += 1
         # check the checkout process
         # for new results
@@ -143,6 +141,10 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == KEYDOWN and event.key == K_q:
                 capture = False
+
+        # don't scan every frame
+        if frames % 12 != 0:
+            continue
 
         # scan and filter results
         scanned = scan()
