@@ -108,7 +108,7 @@ if __name__ == '__main__':
     was_scanned = False
     frames = 0
     while capture:
-        if frames % 10 != 0:
+        if frames % 12 != 0:
             continue
         frames += 1
         # check the checkout process
