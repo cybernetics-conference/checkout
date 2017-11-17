@@ -80,6 +80,7 @@ def wrap_text(text, width):
 def remote_checkouts(q):
     while True:
         url, attendee_id, ts = child.recv()
+        print('CHECKING OUT:', url)
         resp = requests.post(url, json={
             'attendee_id': attendee_id,
             'station_id': socket.gethostname(),
@@ -166,6 +167,8 @@ if __name__ == '__main__':
             to_display = ('Please scan your QR code with the book', datetime.now())
             continue
 
+        print('SCANNED:', scanned)
+        print('URLS:', urls)
         for url in urls:
             # track local checkouts
             d = datetime.utcnow()
