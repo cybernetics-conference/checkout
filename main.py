@@ -33,6 +33,10 @@ font = pygame.font.SysFont('monospace', 32, bold=True)
 
 # webcam setup
 pygame.camera.init()
+pygame.mixer.init()
+checkout_sound = pygame.mixer.Sound("sounds/idea.wav")
+checkout_sound.set_volume(1.0)
+
 cams = pygame.camera.list_cameras()
 cam = pygame.camera.Camera(cams[-1], dim)
 cam.start()
@@ -167,7 +171,9 @@ if __name__ == '__main__':
                 continue
 
             # track local checkouts
-            ts = datetime.now().timestamp()
+            d = datetime.utcnow()
+            epoch = datetime(1970,1,1)
+            ts = (d - epoch).total_seconds()
             db.append({
                 'ts': ts,
                 'url': url
@@ -184,6 +190,9 @@ if __name__ == '__main__':
 
             # give some visual feedback about the checkout
             to_display = ('Thank you', datetime.now())
+            
+            # play a sound
+            checkout_sound.play()
 
     request_proc.terminate()
     request_proc.join()
