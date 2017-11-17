@@ -159,7 +159,7 @@ if __name__ == '__main__':
                 attendee_id = s.replace('http://library.cybernetics.social/planet/', '')
             elif recently_scanned(s):
                 continue
-            else:
+            elif s.startswith('http'):
                 urls.append(s)
 
         if attendee_id is None and urls:
@@ -167,9 +167,6 @@ if __name__ == '__main__':
             continue
 
         for url in urls:
-            if not url:
-                continue
-
             # track local checkouts
             d = datetime.utcnow()
             epoch = datetime(1970,1,1)
@@ -190,7 +187,7 @@ if __name__ == '__main__':
 
             # give some visual feedback about the checkout
             to_display = ('Thank you', datetime.now())
-            
+
             # play a sound
             checkout_sound.play()
 
