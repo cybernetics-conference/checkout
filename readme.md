@@ -54,4 +54,4 @@ The Raspberry Pi's default DNS may be non-ideal, making API calls slow. To chang
 
 Alternately, run `sudo ./setdns.sh`, which will do the above.
 
-**NOTE: This will reset upon boot.**
+**NOTE: DNS will reset upon boot.**
