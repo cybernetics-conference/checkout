@@ -163,6 +163,9 @@ if __name__ == '__main__':
             continue
 
         for url in urls:
+            if not url:
+                continue
+
             # track local checkouts
             ts = datetime.now().timestamp()
             db.append({
