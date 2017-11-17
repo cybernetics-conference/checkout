@@ -167,8 +167,9 @@ if __name__ == '__main__':
             to_display = ('Please scan your QR code with the book', datetime.now())
             continue
 
-        print('SCANNED:', scanned)
-        print('URLS:', urls)
+        if urls:
+            print('SCANNED:', scanned)
+            print('URLS:', urls)
         for url in urls:
             # track local checkouts
             d = datetime.utcnow()
