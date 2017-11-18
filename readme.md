@@ -55,3 +55,11 @@ The Raspberry Pi's default DNS may be non-ideal, making API calls slow. To chang
 Alternately, run `sudo ./setdns.sh`, which will do the above.
 
 **NOTE: DNS will reset upon boot.**
+
+## Screen Rotation
+
+The file will try to read from `pisettings.py`. See `pisettings.py.example` for an example of what it looks like.
+
+If `pisettings.py` exists, it will read from pisettings["rotateangle"] and rotate the screen correspondingly.
+
+This is so that each checkout station can have its video feed rotated to be more intuitive.
