@@ -87,13 +87,17 @@ def remote_checkouts(q):
     while True:
         url, attendee_id, ts = child.recv()
         print('CHECKING OUT:', url)
-        resp = requests.post(url, json={
-            'attendee_id': attendee_id,
-            'station_id': socket.gethostname(),
-            'timestamp': ts
-        })
-        book = resp.json()
-        child.send({'url': url, 'book': book})
+        # catch errors so this process doesn't die
+        try:
+            resp = requests.post(url, json={
+                'attendee_id': attendee_id,
+                'station_id': socket.gethostname(),
+                'timestamp': ts
+            })
+            book = resp.json()
+            child.send({'url': url, 'book': book})
+        except:
+            pass
 
 
 if __name__ == '__main__':
