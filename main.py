@@ -125,6 +125,7 @@ if __name__ == '__main__':
         line_spacing = 2
         img = cam.get_image()
         img = pygame.transform.scale(img, dim)
+        img = pygame.transform.rotate(img, 90)
         elapsed = (datetime.now() - to_display[1]).seconds
         if elapsed < DISPLAY_LENGTH:
             lines = wrap_text(to_display[0], img.get_width())
