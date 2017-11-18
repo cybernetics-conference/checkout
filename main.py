@@ -8,6 +8,12 @@ from datetime import datetime, timedelta
 from db import DB
 import requests
 import socket
+import sys
+
+try:
+  from pisettings import pisettings
+except:
+  pass
 
 FULLSCREEN = True
 LOCAL = False
@@ -125,7 +131,11 @@ if __name__ == '__main__':
         line_spacing = 2
         img = cam.get_image()
         img = pygame.transform.scale(img, dim)
-        img = pygame.transform.rotate(img, 90)
+
+        if 'pisettings' in sys.modules:
+          if "rotateangle" in pisettings:
+             img = pygame.transform.rotate(img, pisettings["rotateangle"])
+
         elapsed = (datetime.now() - to_display[1]).seconds
         if elapsed < DISPLAY_LENGTH:
             lines = wrap_text(to_display[0], img.get_width())

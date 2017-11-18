@@ -1,0 +1,4 @@
+pisettings = {}
+
+pisettings["pi_id"] = 1
+pisettings["rotateangle"] = -90
