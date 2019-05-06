@@ -4,7 +4,7 @@ This lets you use a webcam to scan QR codes, and POSTs the scanned ids to the li
 ## Installation
 
 ```
-sudo apt install libzbar0 libjpeg8-dev
+sudo apt-get install libzbar0 libjpeg8-dev python-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsdl1.2-dev libsmpeg-dev python-numpy subversion libportmidi-dev ffmpeg libswscale-dev libavformat-dev libavcodec-dev
 pip install -r requirements.txt
 ```
 
